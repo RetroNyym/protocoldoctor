@@ -47,30 +47,16 @@ NewPipe v0.29.2 APK'sı, SponsorBlock + InnerTube notlarıyla test edildi. Dokü
 
 ## GitHub Action
 
-```yaml
-# .github/workflows/protocol-doctor.yml
-name: Protocol Doctor
-on:
-  workflow_dispatch:
-    inputs:
-      docs: { required: true, default: "protocol.md" }
-      apk: { required: false }
-jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22 }
-      - run: |
-          node protocoldoctor/bin.js "${{ inputs.docs }}" --apk "${{ inputs.apk }}" --out report.md
-      - uses: actions/upload-artifact@v4
-        with: { name: protocol-report, path: report.md }
+Bu repodaki hazır örneği kendi projenize kopyalayın:
+
+```bash
+# kendi reposunuzda:
+mkdir -p .github/workflows
+curl -O https://raw.githubusercontent.com/RetroNyym/protocoldoctor/main/examples/protocoldoctor.yml
+mv protocoldoctor.yml .github/workflows/
 ```
 
-**Issue-tabanlı kullanım** (reposunda issue'a bir protokol notu ekle):
-`@protocoldoctor check apk=https://host/app.apk` → bot yorum olarak kanıt raporu yazar.
-(Planlanan v2 özelliği — bkz. *Roadmap*.)
+Sonra **Actions → Protocol Doctor → Run workflow**: `protocol.md` yolu ve (opsiyonel) APK URL girin.
 
 ## API
 
