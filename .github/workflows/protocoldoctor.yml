@@ -1,0 +1,51 @@
+name: Protocol Doctor
+
+# Manual run, or run on any push that touches a docs file.
+# Optionally download+check an APK from a URL (inputs.apk) — nothing is executed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      docs:
+        description: "Path to the protocol doc(s) (markdown)"
+        required: true
+        default: "protocol.md"
+      apk_url:
+        description: "Optional public URL of the vendor APK to check against"
+        required: false
+      upload-artifact:
+        description: "Upload report.md as artifact"
+        type: boolean
+        default: true
+  push:
+    paths:
+      - "**.md"
+      - "libs/**"
+      - "lib/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Protocol Doctor
+        run: |
+          ARGS="${{ inputs.docs || 'protocol.md' }}"
+          if [ -n "${{ inputs.apk_url || '' }}" ]; then
+            node bin.js "$ARGS" --apk "${{ inputs.apk_url }}" --out report.md
+          else
+            node bin.js "$ARGS" --src . --out report.md
+          fi
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report
+        if: ${{ inputs.upload-artifact != false }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: protocol-report
+          path: report.md

@@ -1,0 +1,5 @@
+node_modules/
+.tmp-download.bin
+*.apk
+test/report.md
+test/src-report.md
